@@ -22,7 +22,8 @@ public class Payment {
     private Instant moment;
 
     @OneToOne
-    @MapsId
+    @MapsId //Definimos que a entidade order na entidade payment tera a mesmo id que os id correspondente da
+    // tabela order
     private Order order;
 
     @Override
