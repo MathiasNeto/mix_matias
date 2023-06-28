@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,5 +28,16 @@ public class ProductService {
     public Page<ProductDTO> findAll(Pageable pageable){
         return productRepository.findAll(pageable).map(ProductDTO::new);
     }
+    @Transactional
+    public ProductDTO insert (ProductDTO productDTO){
+        Product product = new Product();
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setImgUrl(productDTO.getImgUrl());
 
+        product = productRepository.save(product); //Faco isso pq eu quero que exiba o id que foi salvo,
+        //se nao fizer isso, o id será null
+        return new ProductDTO(product);
+    }
 }
