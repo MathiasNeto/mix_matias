@@ -3,13 +3,18 @@ package com.mixmatias.mtcomerce.services;
 import com.mixmatias.mtcomerce.dto.ProductDTO;
 import com.mixmatias.mtcomerce.entities.Product;
 import com.mixmatias.mtcomerce.repositories.ProductRepository;
+import com.mixmatias.mtcomerce.services.exceptions.DatabaseExecption;
+import com.mixmatias.mtcomerce.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.lang.module.ResolutionException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +26,9 @@ public class ProductService {
     @Transactional(readOnly = true) //Isso diz para o SpringJpa que a consulta irá ser somente de leitura
     //assim a consulta ficara mais otimizada e rapida;
     public ProductDTO findById(Long id){
-        Optional<Product> result = productRepository.findById(id);
-        return new ProductDTO(result.get());
+        Product result = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Entity not Found"));
+        return new ProductDTO(result);
     }
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(Pageable pageable){
@@ -40,15 +46,27 @@ public class ProductService {
     @Transactional
     public ProductDTO update (Long id, ProductDTO productDTO){
         Product product = productRepository.getReferenceById(id); //Deixa o objeto monitorado pela JPA
+        if(!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Id Not Found");
+        }
         copyDtoToEntity(productDTO, product);
         product = productRepository.save(product); //Faco isso pq eu quero que exiba o id que foi salvo,
         //se nao fizer isso, o id será null
         return new ProductDTO(product);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteById(Long id){
-        productRepository.deleteById(id);
+        if(!productRepository.existsById(id)){
+            throw new ResourceNotFoundException(
+                    "Id Not Found"
+            );
+        }
+        try{
+            productRepository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DatabaseExecption("Data integrity failure");
+        }
     }
 
     private void copyDtoToEntity(ProductDTO productDTO, Product product){
