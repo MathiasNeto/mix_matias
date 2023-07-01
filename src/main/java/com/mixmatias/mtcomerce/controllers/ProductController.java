@@ -4,6 +4,7 @@ import com.mixmatias.mtcomerce.dto.ProductDTO;
 import com.mixmatias.mtcomerce.entities.Product;
 import com.mixmatias.mtcomerce.repositories.ProductRepository;
 import com.mixmatias.mtcomerce.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.data.domain.Page;
@@ -34,7 +35,7 @@ public class ProductController {
         return ResponseEntity.ok(productDTOS);
     }
     @PostMapping
-    public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO productDTO){
+    public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO productDTO){
         productDTO = productService.insert(productDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(productDTO.getId()).toUri();
