@@ -3,7 +3,7 @@ package com.mixmatias.mtcomerce.controllers.handlers;
 import com.mixmatias.mtcomerce.dto.CustomError;
 import com.mixmatias.mtcomerce.dto.FieldMessage;
 import com.mixmatias.mtcomerce.dto.ValidationError;
-import com.mixmatias.mtcomerce.services.exceptions.DatabaseExecption;
+import com.mixmatias.mtcomerce.services.exceptions.DatabaseException;
 import com.mixmatias.mtcomerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class ControllerExceptionHandler {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
 
-    @ExceptionHandler(DatabaseExecption.class)
-    public ResponseEntity<CustomError> dataBase(DatabaseExecption e, HttpServletRequest request){
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<CustomError> dataBase(DatabaseException e, HttpServletRequest request){
         CustomError err = new CustomError(
                 Instant.now(),
                 HttpStatus.CONFLICT.value(),
