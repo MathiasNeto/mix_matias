@@ -3,7 +3,7 @@ package com.mixmatias.mtcomerce.services;
 import com.mixmatias.mtcomerce.dto.ProductDTO;
 import com.mixmatias.mtcomerce.entities.Product;
 import com.mixmatias.mtcomerce.repositories.ProductRepository;
-import com.mixmatias.mtcomerce.services.exceptions.DatabaseExecption;
+import com.mixmatias.mtcomerce.services.exceptions.DatabaseException;
 import com.mixmatias.mtcomerce.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,11 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.lang.module.ResolutionException;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -31,8 +26,8 @@ public class ProductService {
         return new ProductDTO(result);
     }
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAll(Pageable pageable){
-        return productRepository.findAll(pageable).map(ProductDTO::new);
+    public Page<ProductDTO> findAll(String name, Pageable pageable){
+        return productRepository.searchByName(name, pageable).map(ProductDTO::new);
     }
     @Transactional
     public ProductDTO insert (ProductDTO productDTO){
@@ -65,7 +60,7 @@ public class ProductService {
         try{
             productRepository.deleteById(id);
         }catch (DataIntegrityViolationException e){
-            throw new DatabaseExecption("Data integrity failure");
+            throw new DatabaseException("Data integrity failure");
         }
     }
 
