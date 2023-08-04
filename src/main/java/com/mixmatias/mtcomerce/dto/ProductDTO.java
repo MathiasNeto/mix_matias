@@ -1,36 +1,51 @@
 package com.mixmatias.mtcomerce.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+import com.mixmatias.mtcomerce.entities.Category;
 import com.mixmatias.mtcomerce.entities.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-
-@NoArgsConstructor
 public class ProductDTO {
+
     private Long id;
-    @NotBlank(message = "Field required")
-    @Size(min = 3, max = 80, message = "name must be 3 to 80 characters long")
+    @Size(min = 3, max = 80, message = "Nome precisar ter de 3 a 80 caracteres")
+    @NotBlank(message = "Campo requerido")
     private String name;
-    @NotBlank(message = "Field required")
-    @Size(min = 10, message = "The description field must be of min 10 characters long")
+    @Size(min = 10, message = "Descrição precisa ter no mínimo 10 caracteres")
+    @NotBlank(message = "Campo requerido")
     private String description;
-    @Positive(message = "The price must be positive")
+    @NotNull(message = "Campo requerido")
+    @Positive(message = "O preço deve ser positivo")
     private Double price;
     private String imgUrl;
+    
+    @NotEmpty(message = "Deve ter pelo menos uma categoria")
+    private List<CategoryDTO> categories = new ArrayList<>();
 
-    public ProductDTO(Product product) {
-        this.id = product.getId();
-        this.name = product.getName();
-        this.description = product.getDescription() ;
-        this.price = product.getPrice();
-        this.imgUrl = product.getImgUrl();
+    public ProductDTO(Long id, String name, String description, Double price, String imgUrl) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.imgUrl = imgUrl;
+    }
+
+    public ProductDTO(Product entity) {
+        id = entity.getId();
+        name = entity.getName();
+        description = entity.getDescription();
+        price = entity.getPrice();
+        imgUrl = entity.getImgUrl();
+        for (Category cat : entity.getCategories()) {
+        	categories.add(new CategoryDTO(cat));
+        }
     }
 
     public Long getId() {
@@ -52,4 +67,8 @@ public class ProductDTO {
     public String getImgUrl() {
         return imgUrl;
     }
+
+	public List<CategoryDTO> getCategories() {
+		return categories;
+	}
 }

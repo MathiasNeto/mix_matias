@@ -1,41 +1,70 @@
 package com.mixmatias.mtcomerce.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.web.service.annotation.GetExchange;
 
 import java.time.Instant;
 import java.util.Objects;
 
-@Table(name = "tb_payment")
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Table(name = "tb_payment")
 public class Payment {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //Por que usou isso se ele esta pegando o id do pedido
     private Long id;
+
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant moment;
 
     @OneToOne
-    @MapsId //Definimos que a entidade order na entidade payment tera a mesmo id que os id correspondente da
-    // tabela order
+    @MapsId
     private Order order;
+
+    public Payment() {
+    }
+
+    public Payment(Long id, Instant moment, Order order) {
+        this.id = id;
+        this.moment = moment;
+        this.order = order;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Instant getMoment() {
+        return moment;
+    }
+
+    public void setMoment(Instant moment) {
+        this.moment = moment;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Payment payment = (Payment) o;
+
         return Objects.equals(id, payment.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id != null ? id.hashCode() : 0;
     }
 }

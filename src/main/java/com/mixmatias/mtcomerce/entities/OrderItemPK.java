@@ -3,22 +3,23 @@ package com.mixmatias.mtcomerce.entities;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@Data
 @Embeddable
 public class OrderItemPK implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public OrderItemPK() {
+    }
 
     public Order getOrder() {
         return order;
@@ -36,19 +37,21 @@ public class OrderItemPK implements Serializable {
         this.product = product;
     }
 
-    public OrderItemPK() {
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         OrderItemPK that = (OrderItemPK) o;
-        return Objects.equals(order, that.order) && Objects.equals(product, that.product);
+
+        if (!Objects.equals(order, that.order)) return false;
+        return Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, product);
+        int result = order != null ? order.hashCode() : 0;
+        result = 31 * result + (product != null ? product.hashCode() : 0);
+        return result;
     }
 }
