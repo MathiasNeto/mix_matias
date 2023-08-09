@@ -41,7 +41,10 @@ public class UserService implements UserDetailsService {
 		
 		return user;
 	}
-	
+
+	/*
+		Esse metodo abaixo pega o usuario logado.
+	*/
 	protected User authenticated() {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
